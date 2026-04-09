@@ -99,14 +99,12 @@
 
 <div class="container">
   <h1>🎬 TikTok Downloader</h1>
-  <p>Download videos without watermark (when available)</p>
+  <p>Download videos without watermark (when possible)</p>
 
-  <form id="form">
-    <div class="input-box">
-      <input id="url" name="url" placeholder="Paste TikTok link here..." required>
-      <button type="submit">Download</button>
-    </div>
-  </form>
+  <div class="input-box">
+    <input id="url" placeholder="Paste TikTok link here..." required>
+    <button onclick="startDownload()">Download</button>
+  </div>
 
   <div class="loader" id="loader">
     <div class="spinner"></div>
@@ -119,10 +117,42 @@
 </div>
 
 <script>
-document.getElementById("form").addEventListener("submit", function(e) {
+async function startDownload() {
+    const url = document.getElementById("url").value;
     const loader = document.getElementById("loader");
+
+    if (!url) {
+        alert("Please enter a TikTok URL");
+        return;
+    }
+
     loader.style.display = "block";
-});
+
+    try {
+        const response = await fetch("/download", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
+            },
+            body: "url=" + encodeURIComponent(url)
+        });
+
+        if (!response.ok) {
+            throw new Error("Download failed");
+        }
+
+        const blob = await response.blob();
+        const link = document.createElement("a");
+        link.href = window.URL.createObjectURL(blob);
+        link.download = "video.mp4";
+        link.click();
+
+    } catch (error) {
+        alert("❌ Failed to download video");
+    }
+
+    loader.style.display = "none";
+}
 </script>
 
 </body>
