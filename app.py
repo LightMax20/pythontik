@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, send_file, jsonify
+from flask import Flask, render_template, request, send_file
 import yt_dlp
 import os
 import uuid
@@ -14,7 +14,7 @@ def download():
     url = request.form.get("url")
 
     if not url:
-        return jsonify({"error": "No URL"}), 400
+        return "No URL"
 
     filename = f"{uuid.uuid4()}.mp4"
 
@@ -29,15 +29,18 @@ def download():
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             ydl.download([url])
 
-        return send_file(filename, as_attachment=True)
+        return send_file(
+            filename,
+            as_attachment=True,
+            download_name="tiktok_video.mp4"
+        )
 
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        return str(e)
 
     finally:
         if os.path.exists(filename):
             os.remove(filename)
-
 
 if __name__ == "__main__":
     app.run()
