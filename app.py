@@ -9,12 +9,13 @@ app = Flask(__name__)
 def home():
     return render_template("index.html")
 
+
 @app.route("/download", methods=["POST"])
 def download():
     url = request.form.get("url")
 
     if not url:
-        return "No URL"
+        return "No URL provided"
 
     filename = f"{uuid.uuid4()}.mp4"
 
@@ -29,18 +30,16 @@ def download():
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             ydl.download([url])
 
-        return send_file(
-            filename,
-            as_attachment=True,
-            download_name="tiktok_video.mp4"
-        )
+        # IMPORTANT: no as_attachment → opens in browser
+        return send_file(filename, mimetype="video/mp4")
 
     except Exception as e:
-        return str(e)
+        return f"Error: {str(e)}"
 
     finally:
         if os.path.exists(filename):
             os.remove(filename)
+
 
 if __name__ == "__main__":
     app.run()
