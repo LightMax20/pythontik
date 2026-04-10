@@ -9,119 +9,135 @@
 body {
   margin: 0;
   font-family: Arial;
-  background: linear-gradient(135deg, #ff0050, #000);
+  background: #0f0f0f;
   color: white;
+}
+
+/* HEADER */
+.header {
+  text-align: center;
+  padding: 20px;
+  font-size: 24px;
+  font-weight: bold;
+}
+
+/* MAIN BOX */
+.container {
+  max-width: 600px;
+  margin: auto;
   text-align: center;
 }
 
-.container {
-  margin-top: 100px;
-}
-
-h1 {
-  font-size: 40px;
-}
-
+/* INPUT */
 .input-box {
-  margin-top: 30px;
   display: flex;
-  justify-content: center;
+  margin-top: 20px;
+  border-radius: 10px;
+  overflow: hidden;
 }
 
 input {
-  width: 300px;
+  flex: 1;
   padding: 15px;
   border: none;
-  border-radius: 10px 0 0 10px;
+  outline: none;
 }
 
 button {
   padding: 15px;
   border: none;
   background: #00f2ea;
-  border-radius: 0 10px 10px 0;
   cursor: pointer;
   font-weight: bold;
 }
 
-button:hover {
-  background: #00cfc7;
-}
-
+/* LOADER */
 .loader {
-  margin-top: 20px;
   display: none;
+  margin-top: 20px;
 }
 
-.spinner {
-  border: 5px solid rgba(255,255,255,0.2);
-  border-top: 5px solid #00f2ea;
-  border-radius: 50%;
-  width: 40px;
-  height: 40px;
-  margin: auto;
-  animation: spin 1s linear infinite;
+/* ADS */
+.ad {
+  margin: 20px auto;
+  width: 100%;
+  height: 90px;
+  background: #222;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #888;
 }
 
-@keyframes spin {
-  100% { transform: rotate(360deg); }
+/* FOOTER */
+.footer {
+  text-align: center;
+  margin-top: 40px;
+  font-size: 12px;
+  color: #777;
 }
 </style>
+
 </head>
 
 <body>
 
+<div class="header">🎬 TikTok Downloader</div>
+
 <div class="container">
-  <h1>🎬 TikTok Downloader</h1>
-  <p>Download videos instantly</p>
+
+  <!-- TOP AD -->
+  <div class="ad">Ad Space</div>
 
   <div class="input-box">
     <input id="url" placeholder="Paste TikTok link...">
-    <button onclick="downloadVideo()">Download</button>
+    <button onclick="download()">Download</button>
   </div>
 
-  <div class="loader" id="loader">
-    <div class="spinner"></div>
-    <p>Downloading...</p>
-  </div>
+  <div class="loader" id="loader">Processing...</div>
+
+  <!-- MIDDLE AD -->
+  <div class="ad">Ad Space</div>
+
+</div>
+
+<div class="footer">
+Free tool • No login required
 </div>
 
 <script>
-async function downloadVideo() {
-    const url = document.getElementById("url").value;
-    const loader = document.getElementById("loader");
+async function download() {
+  const url = document.getElementById("url").value;
+  const loader = document.getElementById("loader");
 
-    if (!url) {
-        alert("Enter a TikTok URL");
-        return;
-    }
+  if (!url) {
+    alert("Enter URL");
+    return;
+  }
 
-    loader.style.display = "block";
+  loader.style.display = "block";
 
-    try {
-        const response = await fetch("/download", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/x-www-form-urlencoded"
-            },
-            body: "url=" + encodeURIComponent(url)
-        });
+  try {
+    const res = await fetch("/download", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded"
+      },
+      body: "url=" + encodeURIComponent(url)
+    });
 
-        if (!response.ok) {
-            throw new Error("Download failed");
-        }
+    const blob = await res.blob();
 
-        const blob = await response.blob();
-        const link = document.createElement("a");
-        link.href = window.URL.createObjectURL(blob);
-        link.download = "video.mp4";
-        link.click();
+    const a = document.createElement("a");
+    a.href = window.URL.createObjectURL(blob);
+    a.download = "tiktok_video.mp4";
+    a.click();
 
-    } catch (err) {
-        alert("Error downloading video");
-    }
+  } catch (e) {
+    alert("Download failed");
+  }
 
-    loader.style.display = "none";
+  loader.style.display = "none";
 }
 </script>
 
