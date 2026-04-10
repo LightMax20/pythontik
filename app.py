@@ -10,9 +10,9 @@ def home():
     return render_template("index.html")
 
 
-@app.route("/download", methods=["POST"])
+@app.route("/download")
 def download():
-    url = request.form.get("url")
+    url = request.args.get("url")
 
     if not url:
         return "No URL provided"
@@ -22,16 +22,19 @@ def download():
     ydl_opts = {
         'format': 'mp4/best',
         'outtmpl': filename,
-        'noplaylist': True,
-        'quiet': True
+        'quiet': True,
+        'noplaylist': True
     }
 
     try:
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             ydl.download([url])
 
-        # IMPORTANT: no as_attachment → opens in browser
-        return send_file(filename, mimetype="video/mp4")
+        return send_file(
+            filename,
+            as_attachment=True,
+            download_name="tiktok_video.mp4"
+        )
 
     except Exception as e:
         return f"Error: {str(e)}"
