@@ -1,128 +1,98 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TikTok Downloader</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TikTok Downloader</title>
 
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: 'Segoe UI', sans-serif;
-    }
+<style>
+body {
+  margin: 0;
+  font-family: Arial;
+  background: linear-gradient(135deg, #ff0050, #000);
+  color: white;
+  text-align: center;
+}
 
-    body {
-      background: linear-gradient(135deg, #ff0050, #000);
-      color: white;
-      height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
+.container {
+  margin-top: 100px;
+}
 
-    .container {
-      text-align: center;
-      width: 90%;
-      max-width: 500px;
-    }
+h1 {
+  font-size: 40px;
+}
 
-    h1 {
-      font-size: 2.5rem;
-      margin-bottom: 10px;
-    }
+.input-box {
+  margin-top: 30px;
+  display: flex;
+  justify-content: center;
+}
 
-    p {
-      opacity: 0.8;
-      margin-bottom: 25px;
-    }
+input {
+  width: 300px;
+  padding: 15px;
+  border: none;
+  border-radius: 10px 0 0 10px;
+}
 
-    .input-box {
-      display: flex;
-      background: white;
-      border-radius: 12px;
-      overflow: hidden;
-      box-shadow: 0 5px 20px rgba(0,0,0,0.3);
-    }
+button {
+  padding: 15px;
+  border: none;
+  background: #00f2ea;
+  border-radius: 0 10px 10px 0;
+  cursor: pointer;
+  font-weight: bold;
+}
 
-    input {
-      flex: 1;
-      padding: 15px;
-      border: none;
-      outline: none;
-      font-size: 14px;
-    }
+button:hover {
+  background: #00cfc7;
+}
 
-    button {
-      padding: 15px 20px;
-      border: none;
-      background: #00f2ea;
-      color: black;
-      font-weight: bold;
-      cursor: pointer;
-      transition: 0.3s;
-    }
+.loader {
+  margin-top: 20px;
+  display: none;
+}
 
-    button:hover {
-      background: #00cfc7;
-    }
+.spinner {
+  border: 5px solid rgba(255,255,255,0.2);
+  border-top: 5px solid #00f2ea;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  margin: auto;
+  animation: spin 1s linear infinite;
+}
 
-    .loader {
-      margin-top: 20px;
-      display: none;
-    }
-
-    .spinner {
-      border: 4px solid rgba(255,255,255,0.2);
-      border-top: 4px solid #00f2ea;
-      border-radius: 50%;
-      width: 40px;
-      height: 40px;
-      animation: spin 1s linear infinite;
-      margin: auto;
-    }
-
-    @keyframes spin {
-      100% { transform: rotate(360deg); }
-    }
-
-    .footer {
-      margin-top: 20px;
-      font-size: 12px;
-      opacity: 0.6;
-    }
-  </style>
+@keyframes spin {
+  100% { transform: rotate(360deg); }
+}
+</style>
 </head>
 
 <body>
 
 <div class="container">
   <h1>🎬 TikTok Downloader</h1>
-  <p>Download videos without watermark (when possible)</p>
+  <p>Download videos instantly</p>
 
   <div class="input-box">
-    <input id="url" placeholder="Paste TikTok link here..." required>
-    <button onclick="startDownload()">Download</button>
+    <input id="url" placeholder="Paste TikTok link...">
+    <button onclick="downloadVideo()">Download</button>
   </div>
 
   <div class="loader" id="loader">
     <div class="spinner"></div>
-    <p>Processing...</p>
-  </div>
-
-  <div class="footer">
-    Free tool • No login required
+    <p>Downloading...</p>
   </div>
 </div>
 
 <script>
-async function startDownload() {
+async function downloadVideo() {
     const url = document.getElementById("url").value;
     const loader = document.getElementById("loader");
 
     if (!url) {
-        alert("Please enter a TikTok URL");
+        alert("Enter a TikTok URL");
         return;
     }
 
@@ -147,8 +117,8 @@ async function startDownload() {
         link.download = "video.mp4";
         link.click();
 
-    } catch (error) {
-        alert("❌ Failed to download video");
+    } catch (err) {
+        alert("Error downloading video");
     }
 
     loader.style.display = "none";
