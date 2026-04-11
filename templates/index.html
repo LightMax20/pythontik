@@ -5,8 +5,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>TikTok Downloader - HD & MP3</title>
-<meta name="description" content="Download TikTok videos without watermark in HD, 720p, 480p or MP3. Fast & free.">
+<title>TikTok Downloader - No Watermark</title>
+<meta name="description" content="Download TikTok videos without watermark in best quality or MP3. Free, fast and easy.">
 
 <style>
 body {
@@ -46,6 +46,7 @@ input {
   flex: 1;
   padding: 15px;
   border: none;
+  outline: none;
 }
 
 button {
@@ -63,13 +64,6 @@ button {
 
 .preview img {
   width: 100%;
-  border-radius: 10px;
-}
-
-.select {
-  width: 100%;
-  padding: 10px;
-  margin-top: 10px;
   border-radius: 10px;
 }
 
@@ -110,19 +104,13 @@ button {
 <div class="card">
 
 <div class="input-box">
-  <input id="url" placeholder="Paste TikTok link">
+  <input id="url" placeholder="Paste TikTok link here...">
   <button onclick="getPreview()">Search</button>
 </div>
 
 <div class="preview" id="preview">
   <img id="thumb">
   <h3 id="title"></h3>
-
-  <select id="quality" class="select">
-    <option value="best">Best Quality</option>
-    <option value="720">HD 720p</option>
-    <option value="480">SD 480p</option>
-  </select>
 
   <button onclick="startDownload('video')">⬇ Download Video</button>
   <button onclick="startDownload('mp3')">🎵 Download MP3</button>
@@ -138,7 +126,7 @@ button {
 <div class="ad">Ad Space</div>
 
 <h2>Download TikTok Videos Without Watermark</h2>
-<p>Free TikTok downloader with HD & MP3 support.</p>
+<p>Free TikTok downloader with fast server and high quality.</p>
 
 </div>
 
@@ -155,7 +143,7 @@ async function getPreview() {
     const res = await fetch("/preview?url=" + encodeURIComponent(url));
     const data = await res.json();
 
-    if (data.error) return alert("Invalid video");
+    if (data.error) return alert(data.error);
 
     document.getElementById("thumb").src = data.thumbnail;
     document.getElementById("title").innerText = data.title;
@@ -165,7 +153,6 @@ async function getPreview() {
 async function startDownload(mode) {
     const bar = document.getElementById("bar");
     const progress = document.getElementById("progress");
-    const quality = document.getElementById("quality").value;
 
     progress.style.display = "block";
     bar.style.width = "10%";
@@ -173,7 +160,7 @@ async function startDownload(mode) {
     const res = await fetch("/download", {
         method: "POST",
         headers: {"Content-Type": "application/x-www-form-urlencoded"},
-        body: `url=${encodeURIComponent(currentUrl)}&mode=${mode}&quality=${quality}`
+        body: `url=${encodeURIComponent(currentUrl)}&mode=${mode}`
     });
 
     let fake = 10;
