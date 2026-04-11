@@ -1,9 +1,13 @@
-from flask import Flask, render_template, request, send_file, jsonify
+from flask import Flask, render_template, request, jsonify, send_file
 import yt_dlp
-import os
 import uuid
+import os
 
 app = Flask(__name__)
+
+DOWNLOAD_FOLDER = "downloads"
+os.makedirs(DOWNLOAD_FOLDER, exist_ok=True)
+
 
 @app.route("/")
 def home():
@@ -15,10 +19,8 @@ def home():
 def preview():
     url = request.args.get("url")
 
-    ydl_opts = {'quiet': True}
-
     try:
-        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+        with yt_dlp.YoutubeDL({'quiet': True}) as ydl:
             info = ydl.extract_info(url, download=False)
 
         return jsonify({
@@ -30,19 +32,19 @@ def preview():
         return jsonify({"error": str(e)})
 
 
-# 📥 DOWNLOAD (HD / MP3)
-@app.route("/download")
+# 📥 DOWNLOAD (returns file name after done)
+@app.route("/download", methods=["POST"])
 def download():
-    url = request.args.get("url")
-    mode = request.args.get("mode", "video")
+    url = request.form.get("url")
+    mode = request.form.get("mode")
 
-    filename = f"{uuid.uuid4()}"
+    file_id = str(uuid.uuid4())
 
     if mode == "mp3":
-        filename += ".mp3"
+        filename = f"{file_id}.mp3"
         ydl_opts = {
             'format': 'bestaudio/best',
-            'outtmpl': filename,
+            'outtmpl': f"{DOWNLOAD_FOLDER}/{file_id}.%(ext)s",
             'postprocessors': [{
                 'key': 'FFmpegExtractAudio',
                 'preferredcodec': 'mp3',
@@ -50,10 +52,10 @@ def download():
             'quiet': True
         }
     else:
-        filename += ".mp4"
+        filename = f"{file_id}.mp4"
         ydl_opts = {
             'format': 'mp4/best',
-            'outtmpl': filename,
+            'outtmpl': f"{DOWNLOAD_FOLDER}/{filename}",
             'quiet': True
         }
 
@@ -61,21 +63,19 @@ def download():
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             ydl.download([url])
 
-        return send_file(
-            filename,
-            as_attachment=True,
-            download_name="tiktok_download"
-        )
+        return jsonify({"file": filename})
 
     except Exception as e:
-        return str(e)
+        return jsonify({"error": str(e)})
 
-    finally:
-        if os.path.exists(filename):
-            os.remove(filename)
+
+# 📤 SERVE FILE
+@app.route("/file/<name>")
+def get_file(name):
+    path = os.path.join(DOWNLOAD_FOLDER, name)
+    return send_file(path, as_attachment=True)
 
 
 if __name__ == "__main__":
-    import os
     port = int(os.environ.get("PORT", 8000))
     app.run(host="0.0.0.0", port=port)
