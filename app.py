@@ -15,7 +15,6 @@ def home():
     return render_template("index.html")
 
 
-# 🎥 PREVIEW
 @app.route("/preview")
 def preview():
     url = request.args.get("url")
@@ -29,11 +28,10 @@ def preview():
             "thumbnail": info.get("thumbnail")
         })
 
-    except Exception as e:
-        return jsonify({"error": "Invalid or unsupported link"})
+    except:
+        return jsonify({"error": "Invalid link"})
 
 
-# 📥 DOWNLOAD (FINAL FIX)
 @app.route("/download", methods=["POST"])
 def download():
     url = request.form.get("url")
@@ -41,9 +39,9 @@ def download():
 
     file_id = str(uuid.uuid4())
 
-    for attempt in range(3):  # 🔁 retry system
+    for attempt in range(3):
         try:
-            # 🎵 MP3
+            # 🎵 MP3 (FIXED)
             if mode == "mp3":
                 filename = f"{file_id}.mp3"
 
@@ -58,12 +56,12 @@ def download():
                     'quiet': True
                 }
 
-            # 🎬 VIDEO (NO QUALITY FORCING)
+            # 🎬 VIDEO
             else:
                 filename = f"{file_id}.mp4"
 
                 ydl_opts = {
-                    'format': 'best',  # ✅ always works for TikTok
+                    'format': 'best',
                     'outtmpl': f"{DOWNLOAD_FOLDER}/{filename}",
                     'quiet': True
                 }
@@ -79,13 +77,11 @@ def download():
             time.sleep(1)
 
 
-# 📤 FILE SERVE
 @app.route("/file/<name>")
 def get_file(name):
-    path = os.path.join(DOWNLOAD_FOLDER, name)
-    return send_file(path, as_attachment=True)
+    return send_file(os.path.join(DOWNLOAD_FOLDER, name), as_attachment=True)
 
 
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 8000))
+    port = int(os.environ.get("PORT", 8080))
     app.run(host="0.0.0.0", port=port)
