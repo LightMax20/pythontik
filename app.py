@@ -30,15 +30,14 @@ def preview():
         })
 
     except Exception as e:
-        return jsonify({"error": str(e)})
+        return jsonify({"error": "Invalid or unsupported link"})
 
 
-# 📥 DOWNLOAD (WITH RETRY + FIXES)
+# 📥 DOWNLOAD (FINAL FIX)
 @app.route("/download", methods=["POST"])
 def download():
     url = request.form.get("url")
     mode = request.form.get("mode")
-    quality = request.form.get("quality", "best")
 
     file_id = str(uuid.uuid4())
 
@@ -59,18 +58,12 @@ def download():
                     'quiet': True
                 }
 
-            # 🎬 VIDEO
+            # 🎬 VIDEO (NO QUALITY FORCING)
             else:
                 filename = f"{file_id}.mp4"
 
-                fmt = "best"
-                if quality == "720":
-                    fmt = "bestvideo[height<=720]+bestaudio/best || best"
-                elif quality == "480":
-                    fmt = "bestvideo[height<=480]+bestaudio/best || best"
-
                 ydl_opts = {
-                    'format': fmt,
+                    'format': 'best',  # ✅ always works for TikTok
                     'outtmpl': f"{DOWNLOAD_FOLDER}/{filename}",
                     'quiet': True
                 }
@@ -86,7 +79,7 @@ def download():
             time.sleep(1)
 
 
-# 📤 FILE DOWNLOAD
+# 📤 FILE SERVE
 @app.route("/file/<name>")
 def get_file(name):
     path = os.path.join(DOWNLOAD_FOLDER, name)
