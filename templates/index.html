@@ -3,45 +3,56 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>TikTok Downloader</title>
+
+<title>TikTok Downloader - No Watermark HD</title>
+
+<!-- SEO -->
+<meta name="description" content="Download TikTok videos without watermark in HD. Free TikTok downloader fast and easy.">
+<meta name="keywords" content="tiktok downloader, no watermark, download tiktok hd">
 
 <style>
 body {
   margin: 0;
-  font-family: Arial, sans-serif;
-  background: #0f0f0f;
+  font-family: 'Segoe UI', sans-serif;
+  background: #111;
   color: white;
 }
 
-/* HEADER */
 .header {
+  background: #000;
+  padding: 15px;
   text-align: center;
-  padding: 20px;
-  font-size: 26px;
+  font-size: 24px;
   font-weight: bold;
 }
 
-/* CONTAINER */
+.hero {
+  text-align: center;
+  padding: 40px 20px;
+  background: linear-gradient(135deg, #ff0050, #000);
+}
+
+.hero h1 {
+  margin-bottom: 10px;
+}
+
 .container {
   max-width: 600px;
   margin: auto;
-  text-align: center;
+  padding: 20px;
 }
 
-/* INPUT BOX */
 .input-box {
   display: flex;
-  margin-top: 20px;
-  border-radius: 10px;
+  border-radius: 12px;
   overflow: hidden;
+  background: white;
 }
 
 input {
   flex: 1;
   padding: 15px;
   border: none;
-  outline: none;
-  font-size: 14px;
 }
 
 button {
@@ -52,75 +63,133 @@ button {
   cursor: pointer;
 }
 
-/* LOADER */
-.loader {
+.preview {
   display: none;
   margin-top: 20px;
-  font-size: 14px;
+  background: #1a1a1a;
+  padding: 15px;
+  border-radius: 10px;
 }
 
-/* ADS */
-.ad {
-  margin: 20px auto;
+.preview img {
   width: 100%;
+  border-radius: 10px;
+}
+
+.btn-group {
+  margin-top: 10px;
+  display: flex;
+  gap: 10px;
+}
+
+.btn {
+  flex: 1;
+  padding: 12px;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.hd { background: #00f2ea; }
+.mp3 { background: #ff0050; color: white; }
+
+.ad {
+  margin: 20px 0;
   height: 90px;
   background: #222;
   display: flex;
   justify-content: center;
   align-items: center;
-  color: #888;
-}
-
-/* FOOTER */
-.footer {
-  text-align: center;
-  margin-top: 40px;
-  font-size: 12px;
   color: #777;
 }
-</style>
 
+.content {
+  margin-top: 30px;
+  line-height: 1.6;
+}
+
+.footer {
+  text-align: center;
+  padding: 20px;
+  font-size: 12px;
+  color: #888;
+}
+</style>
 </head>
 
 <body>
 
-<div class="header">🎬 TikTok Downloader</div>
+<div class="header">SnapTik Style Downloader</div>
+
+<div class="hero">
+  <h1>Download TikTok Videos</h1>
+  <p>No watermark • HD quality • Free</p>
+</div>
 
 <div class="container">
 
-  <!-- TOP AD -->
   <div class="ad">Ad Space</div>
 
   <div class="input-box">
     <input id="url" placeholder="Paste TikTok link here...">
-    <button onclick="startDownload()">Download</button>
+    <button onclick="getPreview()">Search</button>
   </div>
 
-  <div class="loader" id="loader">Processing... Please wait</div>
+  <div class="preview" id="preview">
+    <img id="thumb">
+    <h3 id="title"></h3>
 
-  <!-- MIDDLE AD -->
+    <div class="btn-group">
+      <button class="btn hd" onclick="download('video')">Download HD</button>
+      <button class="btn mp3" onclick="download('mp3')">Download MP3</button>
+    </div>
+  </div>
+
   <div class="ad">Ad Space</div>
+
+  <div class="content">
+    <h2>Best TikTok Video Downloader</h2>
+    <p>
+      Download TikTok videos without watermark in HD quality. 
+      Our tool is fast, secure, and free to use. No login required.
+    </p>
+
+    <h3>How to Download?</h3>
+    <ul>
+      <li>Copy TikTok video link</li>
+      <li>Paste it above</li>
+      <li>Click download</li>
+    </ul>
+  </div>
 
 </div>
 
 <div class="footer">
-Free tool • No login required
+© 2026 Free TikTok Downloader
 </div>
 
 <script>
-function startDownload() {
+let currentUrl = "";
+
+async function getPreview() {
     const url = document.getElementById("url").value;
-    const loader = document.getElementById("loader");
 
-    if (!url) {
-        alert("Please enter a TikTok URL");
-        return;
-    }
+    if (!url) return alert("Enter URL");
 
-    loader.style.display = "block";
+    currentUrl = url;
 
-    // Redirect to backend (this triggers real download)
-    window.location.href = "/download?url=" + encodeURIComponent(url);
+    const res = await fetch("/preview?url=" + encodeURIComponent(url));
+    const data = await res.json();
+
+    if (data.error) return alert("Failed");
+
+    document.getElementById("thumb").src = data.thumbnail;
+    document.getElementById("title").innerText = data.title;
+    document.getElementById("preview").style.display = "block";
+}
+
+function download(type) {
+    window.location.href = "/download?url=" + encodeURIComponent(currentUrl) + "&type=" + type;
 }
 </script>
 
