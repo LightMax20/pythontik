@@ -1,32 +1,233 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<title>TikTok Downloader</title>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>TikTok Video Downloader Without Watermark - Free HD</title>
+<meta name="description" content="Download TikTok videos without watermark in HD or MP3. Fast, free, and unlimited.">
+
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
+}
+
+body {
+  background: linear-gradient(135deg, #ff0050, #00f2ea);
+  color: white;
+  text-align: center;
+}
+
+/* HEADER */
+.header {
+  padding: 20px;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+/* MAIN BOX */
+.container {
+  max-width: 600px;
+  margin: 40px auto;
+  background: white;
+  color: black;
+  padding: 20px;
+  border-radius: 15px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+}
+
+/* INPUT */
+.input-box {
+  display: flex;
+  border-radius: 50px;
+  overflow: hidden;
+  border: 2px solid #ddd;
+}
+
+.input-box input {
+  flex: 1;
+  padding: 15px;
+  border: none;
+  outline: none;
+}
+
+.input-box button {
+  background: #ff0050;
+  color: white;
+  border: none;
+  padding: 15px 20px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+/* PREVIEW */
+.preview {
+  display: none;
+  margin-top: 20px;
+}
+
+.preview img {
+  width: 100%;
+  border-radius: 10px;
+}
+
+.preview h3 {
+  margin: 10px 0;
+  font-size: 18px;
+}
+
+/* BUTTONS */
+.buttons button {
+  width: 100%;
+  padding: 12px;
+  margin-top: 10px;
+  border: none;
+  border-radius: 10px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.video-btn {
+  background: #00c853;
+  color: white;
+}
+
+.mp3-btn {
+  background: #2962ff;
+  color: white;
+}
+
+/* PROGRESS */
+.progress {
+  margin-top: 15px;
+  background: #eee;
+  border-radius: 20px;
+  overflow: hidden;
+  display: none;
+}
+
+.progress-bar {
+  height: 10px;
+  width: 0%;
+  background: #ff0050;
+}
+
+/* ADS */
+.ad {
+  margin: 20px auto;
+  height: 90px;
+  background: #ddd;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* SEO CONTENT */
+.content {
+  max-width: 700px;
+  margin: 40px auto;
+  padding: 10px;
+}
+
+.content h2 {
+  margin-bottom: 10px;
+}
+</style>
+
 </head>
+
 <body>
 
-<h2>TikTok Downloader</h2>
+<div class="header">TikTok Downloader</div>
 
-<input id="url" placeholder="Paste link">
-<button onclick="download('video')">Download Video</button>
-<button onclick="download('mp3')">Download MP3</button>
+<div class="ad">Ad Space</div>
+
+<div class="container">
+
+<div class="input-box">
+  <input id="url" placeholder="Paste TikTok link here...">
+  <button onclick="getPreview()">Download</button>
+</div>
+
+<div class="preview" id="preview">
+  <img id="thumb">
+  <h3 id="title"></h3>
+
+  <div class="buttons">
+    <button class="video-btn" onclick="startDownload('video')">Download Video</button>
+    <button class="mp3-btn" onclick="startDownload('mp3')">Download MP3</button>
+  </div>
+
+  <div class="progress" id="progress">
+    <div class="progress-bar" id="bar"></div>
+  </div>
+
+</div>
+
+</div>
+
+<div class="ad">Ad Space</div>
+
+<div class="content">
+  <h2>Download TikTok Videos Without Watermark</h2>
+  <p>
+    Use our free TikTok downloader to save videos without watermark.
+    Supports fast download and MP3 conversion.
+  </p>
+</div>
 
 <script>
-async function download(mode) {
+let currentUrl = "";
+
+async function getPreview() {
     const url = document.getElementById("url").value;
+
+    if (!url) return alert("Enter URL");
+
+    currentUrl = url;
+
+    const res = await fetch("/preview?url=" + encodeURIComponent(url));
+    const data = await res.json();
+
+    if (data.error) return alert(data.error);
+
+    document.getElementById("thumb").src = data.thumbnail;
+    document.getElementById("title").innerText = data.title;
+    document.getElementById("preview").style.display = "block";
+}
+
+async function startDownload(mode) {
+    const bar = document.getElementById("bar");
+    const progress = document.getElementById("progress");
+
+    progress.style.display = "block";
+    bar.style.width = "10%";
 
     const res = await fetch("/download", {
         method: "POST",
         headers: {"Content-Type": "application/x-www-form-urlencoded"},
-        body: `url=${encodeURIComponent(url)}&mode=${mode}`
+        body: `url=${encodeURIComponent(currentUrl)}&mode=${mode}`
     });
 
+    let fake = 10;
+    const interval = setInterval(() => {
+        fake += 10;
+        if (fake < 90) bar.style.width = fake + "%";
+    }, 400);
+
     const data = await res.json();
+
+    clearInterval(interval);
+    bar.style.width = "100%";
 
     if (data.file) {
         window.location.href = "/file/" + data.file;
     } else {
-        alert(data.error);
+        alert("Download failed: " + data.error);
     }
 }
 </script>
