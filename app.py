@@ -42,22 +42,16 @@ def download():
 
     if mode == "mp3":
         filename = f"{file_id}.mp3"
-        ydl_opts = {
-            'format': 'bestaudio/best',
-            'outtmpl': f"{DOWNLOAD_FOLDER}/{file_id}.%(ext)s",
-            'postprocessors': [{
-                'key': 'FFmpegExtractAudio',
-                'preferredcodec': 'mp3',
-            }],
-            'quiet': True
-        }
-    else:
-        filename = f"{file_id}.mp4"
-        ydl_opts = {
-            'format': 'mp4/best',
-            'outtmpl': f"{DOWNLOAD_FOLDER}/{filename}",
-            'quiet': True
-        }
+      ydl_opts = {
+    'format': 'bestaudio/best',
+    'outtmpl': f"{DOWNLOAD_FOLDER}/{file_id}.%(ext)s",
+    'ffmpeg_location': '/usr/bin/ffmpeg',
+    'postprocessors': [{
+        'key': 'FFmpegExtractAudio',
+        'preferredcodec': 'mp3',
+    }],
+    'quiet': True
+}
 
     try:
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
