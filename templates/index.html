@@ -1,168 +1,110 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>TikTok Downloader - No Watermark</title>
-
-<meta name="description" content="Download TikTok videos without watermark in HD or MP3 format. Fast and free.">
+<title>TikTok Video Downloader - HD & MP3</title>
+<meta name="description" content="Download TikTok videos without watermark in HD, 720p, 480p or MP3. Free fast downloader.">
 
 <style>
-body {
-  margin: 0;
-  font-family: Arial;
-  background: #121212;
-  color: white;
-}
-
-.header {
-  text-align: center;
-  padding: 20px;
-  font-size: 26px;
-  font-weight: bold;
-}
-
-.container {
-  max-width: 500px;
-  margin: auto;
-  padding: 10px;
-}
-
-.input-box {
-  display: flex;
-  border-radius: 50px;
-  overflow: hidden;
-  background: white;
-}
-
-input {
-  flex: 1;
-  padding: 15px;
-  border: none;
-  outline: none;
-}
-
-button {
-  padding: 15px;
-  border: none;
-  background: #00f2ea;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-.preview {
-  display: none;
-  margin-top: 20px;
-  background: #1a1a1a;
-  padding: 15px;
-  border-radius: 12px;
-}
-
-.preview img {
-  width: 100%;
-  border-radius: 10px;
-}
-
-.progress {
-  margin-top: 15px;
-  background: #333;
-  border-radius: 20px;
-  overflow: hidden;
-  display: none;
-}
-
-.progress-bar {
-  height: 10px;
-  width: 0%;
-  background: #00f2ea;
-}
-
-.download-btn {
-  width: 100%;
-  margin-top: 10px;
-}
+body {margin:0;font-family:Arial;background:#0f0f0f;color:#fff;}
+.header {text-align:center;padding:20px;font-size:28px;font-weight:bold;}
+.container {max-width:600px;margin:auto;padding:10px;}
+.card {background:#1a1a1a;padding:15px;border-radius:15px;box-shadow:0 0 10px rgba(0,0,0,0.5);} 
+.input-box {display:flex;border-radius:50px;overflow:hidden;background:#fff;margin-top:20px;}
+input {flex:1;padding:15px;border:none;}
+button {padding:15px;border:none;background:#00f2ea;font-weight:bold;cursor:pointer;}
+.preview {display:none;margin-top:20px;}
+.preview img {width:100%;border-radius:10px;}
+.progress {margin-top:15px;background:#333;border-radius:20px;overflow:hidden;display:none;}
+.progress-bar {height:10px;width:0%;background:#00f2ea;}
+.select {margin-top:10px;width:100%;padding:10px;border-radius:10px;}
+.footer {text-align:center;margin-top:40px;color:#aaa;font-size:12px;}
+.ad {height:90px;background:#222;margin:20px 0;display:flex;align-items:center;justify-content:center;}
 </style>
-
 </head>
-
 <body>
 
-<div class="header">🎬 TikTok Downloader</div>
-
+<div class="header">🔥 TikTok Downloader</div>
 <div class="container">
 
+<div class="ad">Ad Space</div>
+
+<div class="card">
 <div class="input-box">
-  <input id="url" placeholder="Paste TikTok link">
-  <button onclick="getPreview()">Search</button>
+<input id="url" placeholder="Paste TikTok link">
+<button onclick="getPreview()">Search</button>
 </div>
 
 <div class="preview" id="preview">
-  <img id="thumb">
-  <h3 id="title"></h3>
+<img id="thumb">
+<h3 id="title"></h3>
 
-  <button class="download-btn" onclick="startDownload('video')">Download HD</button>
-  <button class="download-btn" onclick="startDownload('mp3')">Download MP3</button>
+<select id="quality" class="select">
+<option value="best">Best Quality</option>
+<option value="720">HD 720p</option>
+<option value="480">SD 480p</option>
+</select>
 
-  <div class="progress" id="progress">
-    <div class="progress-bar" id="bar"></div>
-  </div>
+<button onclick="startDownload('video')">⬇ Download Video</button>
+<button onclick="startDownload('mp3')">🎵 Download MP3</button>
+
+<div class="progress" id="progress"><div class="progress-bar" id="bar"></div></div>
 </div>
+</div>
+
+<div class="ad">Ad Space</div>
+
+<h2>Download TikTok Videos Without Watermark</h2>
+<p>Fast, free and SEO optimized TikTok downloader tool.</p>
+
+<div class="footer">No login • Free • Unlimited</div>
 
 </div>
 
 <script>
-let currentUrl = "";
+let currentUrl="";
 
-async function getPreview() {
-    const url = document.getElementById("url").value;
-
-    if (!url) return alert("Enter URL");
-
-    currentUrl = url;
-
-    const res = await fetch("/preview?url=" + encodeURIComponent(url));
-    const data = await res.json();
-
-    if (data.error) return alert("Invalid video");
-
-    document.getElementById("thumb").src = data.thumbnail;
-    document.getElementById("title").innerText = data.title;
-    document.getElementById("preview").style.display = "block";
+async function getPreview(){
+ const url=document.getElementById("url").value;
+ if(!url) return alert("Enter URL");
+ currentUrl=url;
+ const res=await fetch("/preview?url="+encodeURIComponent(url));
+ const data=await res.json();
+ if(data.error) return alert("Invalid video");
+ document.getElementById("thumb").src=data.thumbnail;
+ document.getElementById("title").innerText=data.title;
+ document.getElementById("preview").style.display="block";
 }
 
-async function startDownload(mode) {
-    const bar = document.getElementById("bar");
-    const progressBox = document.getElementById("progress");
+async function startDownload(mode){
+ const bar=document.getElementById("bar");
+ const progress=document.getElementById("progress");
+ const quality=document.getElementById("quality").value;
+ progress.style.display="block";
+ bar.style.width="10%";
 
-    progressBox.style.display = "block";
-    bar.style.width = "10%";
+ const res=await fetch("/download",{
+  method:"POST",
+  headers:{"Content-Type":"application/x-www-form-urlencoded"},
+  body:`url=${encodeURIComponent(currentUrl)}&mode=${mode}&quality=${quality}`
+ });
 
-    const res = await fetch("/download", {
-        method: "POST",
-        headers: {"Content-Type": "application/x-www-form-urlencoded"},
-        body: "url=" + encodeURIComponent(currentUrl) + "&mode=" + mode
-    });
+ let fake=10;
+ const interval=setInterval(()=>{
+  fake+=10;
+  if(fake<90) bar.style.width=fake+"%";
+ },500);
 
-    let fakeProgress = 10;
-    const interval = setInterval(() => {
-        fakeProgress += 10;
-        if (fakeProgress < 90) {
-            bar.style.width = fakeProgress + "%";
-        }
-    }, 500);
+ const data=await res.json();
+ clearInterval(interval);
+ bar.style.width="100%";
 
-    const data = await res.json();
-
-    clearInterval(interval);
-    bar.style.width = "100%";
-
-    if (data.file) {
-        window.location.href = "/file/" + data.file;
-    } else {
-        alert("Download failed");
-    }
+ if(data.file){
+  window.location.href="/file/"+data.file;
+ }else{
+  alert("Download failed");
+ }
 }
 </script>
 
